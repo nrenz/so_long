@@ -6,37 +6,53 @@
 #    By: nrenz <nrenz@student.42wolfsburg.de>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/11 10:46:35 by nrenz             #+#    #+#              #
-#    Updated: 2022/07/13 12:14:16 by nrenz            ###   ########.fr        #
+#    Updated: 2022/10/13 14:53:57 by nrenz            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS =	so_long.c
+SRCS =	so_long.c \
+		get_map.c \
+		map_error_check.c \
+		map_error_check2.c \
+		map_error_check3.c \
+		player_path_check.c \
+		map_img.c \
+		moves.c \
 
 OBJS = $(SRCS:.c=.o)
 
+LIBFTDIR = libft
+LIBFT = ./libft/libft.a
+
+MLXDIR = mlx
+MLX = ./mlx/libmlx.a
+
+
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -Imlx -c $< -o $@ -I ../libft
+CFLAGS = -Wall -Wextra -Werror -I libft
 
 NAME = so_long
 
-all: $(NAME)
+all: libft $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(OBJS) -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
+$(NAME): $(LIBFT) $(MLX) $(OBJS)
+	$(CC) $(CFLAGS) $^ -framework OpenGL -framework AppKit -o $(NAME)
 
-libft:
-	make all -C ../libft
+$(LIBFT):
+	make all -C $(LIBFTDIR)
+
+$(MLX):
+	make all -C $(MLXDIR)
 
 clean:
+	make clean -C libft
+	make clean -C mlx
 	rm -f $(OBJS)
 
 fclean: clean
+	make fclean -C libft
 	rm -f $(NAME)
 
 re: fclean $(NAME)
 
-leaks:
-	make
-	leaks --atExit -- ./so_lomg
-
-.PHONY: all clean fclean re leaks
+.PHONY: all clean fclean re
